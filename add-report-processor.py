@@ -5,22 +5,6 @@ from datetime import datetime
 import csv
 import sys
 
-def find_encoding(fileName):
-	"""
-	Returns detected encoding of given file.
-	
-	Arguments:
-	fileName - name of file to find encoding
-	"""
-	
-	detector = UniversalDetector()
-	with open(fileName, 'rb') as file:
-		for line in file.readlines():
-			detector.feed(line)
-			if detector.done: break
-	detector.close()
-	return detector.result['encoding']
-
 def read_input_report(fileName, enc):
 	df = pd.read_csv(fileName, encoding=enc, names=['date', 'state', 'impression', 'CTR'])
 	
