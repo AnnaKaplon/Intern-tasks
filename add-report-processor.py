@@ -2,7 +2,7 @@ from chardet.universaldetector import UniversalDetector
 import pandas as pd
 import pycountry
 from datetime import datetime
-import math
+import csv
 import sys
 
 def find_encoding(fileName):
@@ -31,10 +31,12 @@ def read_input_report(fileName, enc):
 			CTR = float(row['CTR'])
 		except ValueError:
 			CTR = float(row['CTR'][:-1])
+		
 		try:
 			countryCode = pycountry.subdivisions.lookup(state).country.alpha_3
 		except LookupError:
 			countryCode = 'XXX'
+		
 		add_to_memory(date, countryCode, impression, CTR)
 	
 def add_to_memory(date, countryCode, impression, CTR):
@@ -50,10 +52,14 @@ def add_to_memory(date, countryCode, impression, CTR):
 		
 def save_new_report():
 	with open('outputReport.csv', 'w') as file:
-		file.write
+		csvWriter = csv.writer(file, dialect='unix')
+		
+		csvWriter.writerow(['date', 'countryCode', 'impressions', 'clicks'])
 		for date in sorted(memory):
 			for country in sorted(memory[date]):
-				pass
+				impressions = memory[date][country]['impressions']
+				clicks = memory[date][country]['clicks']
+				csvWriter.writerow([date.strftime('%Y-%m-%d'), country, impressions, clicks])
 				
 			
 
