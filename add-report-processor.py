@@ -56,6 +56,10 @@ def save_new_report():
 	except IOException:
 		print('Refusal to create a file. Report can not be generated.')
 		exit()
+	except Exception as ex:
+		print(ex)
+		print('Unexpected error occurred.')
+		exit()
 				
 
 if __name__ == '__main__':
@@ -80,6 +84,7 @@ if __name__ == '__main__':
 		except Exception as ex:
 			print(ex)
 			print('Unexpected error occurred.')
+			exit()
 	
 	save_new_report()
 	
