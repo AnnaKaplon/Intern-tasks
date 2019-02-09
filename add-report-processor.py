@@ -4,17 +4,27 @@ import pycountry
 from datetime import datetime
 import csv
 import sys
+import re
 
 def read_input_report(fileName, enc):
 	df = pd.read_csv(fileName, encoding=enc, names=['date', 'state', 'impression', 'CTR'])
 	
 	for index, row in df.iterrows():
-		date, state, impression = datetime.strptime(row['date'], '%m/%d/%Y'),\
-		row['state'], int(row['impression'])
+		try:
+			date, state, impression = datetime.strptime(row['date'], '%m/%d/%Y'),\
+			row['state'], int(row['impression'])
+		except Exception:
+			print('Broken data in row {}. This data has been ignored'.format(index))
+			continue
 		try:
 			CTR = float(row['CTR'])
-		except ValueError:
-			CTR = float(row['CTR'][:-1])
+		except Exception:
+			if re.match('\d+(?:\.\d+)?%', row['CTR']):
+				CTR = float(row['CTR'][:-1])
+			else:
+				print('Broken data in row {}. This data has been ignored'.format(index))
+				continue
+			
 		
 		try:
 			countryCode = pycountry.subdivisions.lookup(state).country.alpha_3
