@@ -1,4 +1,3 @@
-from chardet.universaldetector import UniversalDetector
 import pandas as pd
 import pycountry
 from datetime import datetime
@@ -19,13 +18,12 @@ def read_input_report(fileName, enc):
 		try:
 			CTR = float(row['CTR'])
 		except Exception:
-			if re.match('\d+(?:\.\d+)?%', row['CTR']):
+			if re.match('\d+(?:\.\d+)?%$', row['CTR']):
 				CTR = float(row['CTR'][:-1])
 			else:
 				print('Broken data in row {}. This data has been ignored'.format(index))
 				continue
-			
-		
+				
 		try:
 			countryCode = pycountry.subdivisions.lookup(state).country.alpha_3
 		except LookupError:
@@ -45,25 +43,27 @@ def add_to_memory(date, countryCode, impression, CTR):
 		memory[date][countryCode]['clicks'] += round(impression*CTR/100)
 		
 def save_new_report():
-	with open('outputReport.csv', 'w') as file:
-		csvWriter = csv.writer(file, dialect='unix')
-		
-		csvWriter.writerow(['date', 'countryCode', 'impressions', 'clicks'])
-		for date in sorted(memory):
-			for country in sorted(memory[date]):
-				impressions = memory[date][country]['impressions']
-				clicks = memory[date][country]['clicks']
-				csvWriter.writerow([date.strftime('%Y-%m-%d'), country, impressions, clicks])
+	try:
+		with open('outputReport.csv', 'w') as file:
+			csvWriter = csv.writer(file, dialect='unix')
+
+			csvWriter.writerow(['date', 'countryCode', 'impressions', 'clicks'])
+			for date in sorted(memory):
+				for country in sorted(memory[date]):
+					impressions = memory[date][country]['impressions']
+					clicks = memory[date][country]['clicks']
+					csvWriter.writerow([date.strftime('%Y-%m-%d'), country, impressions, clicks])
+	except IOException:
+		print('Refusal to create a file. Report can not be generated.')
+		exit()
 				
 
 if __name__ == '__main__':
 	args = sys.argv
 	global memory
 	
-	try:
-		inputFile = args[1]
-	except IndexError:
-		print('No input file given. Report can not be generated.')
+	if len(args) < 2:
+		print('No input file given. Report can not be generated.', file=sys.stderr)
 		exit()
 	if not inputFile.lower().endswith('.csv'):
 		raise ValueError('Given file is not csv. Report can not be generated.')
@@ -77,6 +77,9 @@ if __name__ == '__main__':
 		except UnicodeDecodeError:
 			print('Unexpected encoding of ' + inputFile + " Report can not be generated.")
 			exit()
+		except Exception as ex:
+			print(ex)
+			print('Unexpected error occurred.')
 	
 	save_new_report()
 	
