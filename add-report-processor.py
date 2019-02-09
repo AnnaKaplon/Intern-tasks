@@ -45,18 +45,28 @@ def save_new_report():
 				clicks = memory[date][country]['clicks']
 				csvWriter.writerow([date.strftime('%Y-%m-%d'), country, impressions, clicks])
 				
-			
-
 
 if __name__ == '__main__':
 	args = sys.argv
-	global memory 
-	inputFile = args[1]
+	global memory
+	
+	try:
+		inputFile = args[1]
+	except IndexError:
+		print('No input file given. Report can not be generated.')
+		exit()
+	if not inputFile.lower().endswith('.csv'):
+		raise ValueError('Given file is not csv. Report can not be generated.')
 	
 	memory = {}
 	try:
 		read_input_report(inputFile, 'utf-8')
 	except UnicodeDecodeError:
-		read_input_report(inputFile, 'utf-16')
+		try:
+			read_input_report(inputFile, 'utf-16')
+		except UnicodeDecodeError:
+			print('Unexpected encoding of ' + inputFile + " Report can not be generated.")
+			exit()
+	
 	save_new_report()
 	
