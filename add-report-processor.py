@@ -1,11 +1,19 @@
+from datetime import datetime
 import pandas as pd
 import pycountry
-from datetime import datetime
 import csv
 import sys
 import re
 
 def read_input_report(fileName, enc):
+	"""
+	Reads csv file containing reports with daily impression numbers and
+	CTRs aggregated per state and saves data into global memory.
+	
+	Arguments:
+	fileName - name of file with data
+	enc - encoding of file
+	"""
 	df = pd.read_csv(fileName, encoding=enc, names=['date', 'state', 'impression', 'CTR'])
 	
 	for index, row in df.iterrows():
@@ -32,6 +40,15 @@ def read_input_report(fileName, enc):
 		add_to_memory(date, countryCode, impression, CTR)
 	
 def add_to_memory(date, countryCode, impression, CTR):
+	"""
+	Adds data from one row in csv file to global memory.
+	
+	Arguments:
+	date - date of impressions
+	countryCode - code of country
+	impression - number of impressions
+	CTR - click to impression rate
+	"""
 	if date not in memory:
 		memory[date] = {}
 	if countryCode not in memory[date]:
@@ -43,6 +60,10 @@ def add_to_memory(date, countryCode, impression, CTR):
 		memory[date][countryCode]['clicks'] += round(impression*CTR/100)
 		
 def save_new_report():
+	"""
+	Creates new csv file with daily impression numbers and number
+	of clicks aggregated per country based on data in global memory. 
+	"""
 	try:
 		with open('outputReport.csv', 'w') as file:
 			csvWriter = csv.writer(file, dialect='unix')
@@ -66,12 +87,17 @@ if __name__ == '__main__':
 	args = sys.argv
 	global memory
 	
+	# checking if any file has been passed
 	if len(args) < 2:
-		print('No input file given. Report can not be generated.', file=sys.stderr)
+		print('No input file given. Report can not be generated.')
 		exit()
+	
+	# checking if file has appropriate extension
+	inputFile = args[1]
 	if not inputFile.lower().endswith('.csv'):
 		raise ValueError('Given file is not csv. Report can not be generated.')
 	
+	#reading file and saving to memory
 	memory = {}
 	try:
 		read_input_report(inputFile, 'utf-8')
@@ -85,6 +111,13 @@ if __name__ == '__main__':
 			print(ex)
 			print('Unexpected error occurred.')
 			exit()
+	except FileNotFoundError:
+		print('No such file. Report can not be generated.')
+	except Exception as ex:
+		print(ex)
+		print('Unexpected error occurred.')
+		exit()
 	
+	#creating new report
 	save_new_report()
-	
+	print('New report has been successfully generated')
