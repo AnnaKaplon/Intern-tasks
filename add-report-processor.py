@@ -75,7 +75,7 @@ def save_new_report():
 					clicks = memory[date][country]['clicks']
 					csvWriter.writerow([date.strftime('%Y-%m-%d'), country, impressions, clicks])
 	except IOException:
-		print('Refusal to create a file. Report can not be generated.')
+		print('Refusal to create a file. Report cannot be generated.')
 		exit()
 	except Exception as ex:
 		print(ex)
@@ -89,13 +89,13 @@ if __name__ == '__main__':
 	
 	# checking if any file has been passed
 	if len(args) < 2:
-		print('No input file given. Report can not be generated.')
+		print('No input file given. Report cannot be generated.')
 		exit()
 	
 	# checking if file has appropriate extension
 	inputFile = args[1]
 	if not inputFile.lower().endswith('.csv'):
-		raise ValueError('Given file is not csv. Report can not be generated.')
+		raise ValueError('Given file is not csv. Report cannot be generated.')
 	
 	#reading file and saving to memory
 	memory = {}
@@ -105,14 +105,14 @@ if __name__ == '__main__':
 		try:
 			read_input_report(inputFile, 'utf-16')
 		except UnicodeDecodeError:
-			print('Unexpected encoding of ' + inputFile + " Report can not be generated.")
+			print('Unexpected encoding of ' + inputFile + " Report cannot be generated.")
 			exit()
 		except Exception as ex:
 			print(ex)
 			print('Unexpected error occurred.')
 			exit()
 	except FileNotFoundError:
-		print('No such file. Report can not be generated.')
+		print('No such file. Report cannot be generated.')
 	except Exception as ex:
 		print(ex)
 		print('Unexpected error occurred.')
