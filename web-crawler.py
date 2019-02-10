@@ -6,15 +6,15 @@ import re
 def site_map(url, siteMap={}, basicURL=''):
 	"""
 	Creates map of site as dictionary with urls (given url and its subpages) as keys 
-	and another dictionarys containing data about particular url as values.
+	and another dictionaries containing data about particular url as values.
 	Nested dictionary contains 'title' and 'links' keys which correspons to
 	title of page and accessible links within given domain.
 	
 	url - url address of site to map
-	(siteMap (optional) - dictionary with part of map, if passed function doesn't 
+	siteMap (optional) - dictionary with part of map; if passed, function doesn't 
 		create new map but expands this one
-	basicURL (optional) - url in reference to which function search subpages,
-		if not passed url is basicURL
+	basicURL (optional) - url in reference to which function search subpages;
+		if not passed, url is basicURL
 	"""
 	url = delete_bookmark(url)
 	if basicURL == '':
@@ -85,7 +85,7 @@ def get_area_refs(soup, url, basicURL):
 
 def check_correctness(basicURL, ref):
 	"""
-	Returns true when given url is subpage of main url and False
+	Returns True when given url is subpage of main url and False
 	otherwise.
 	
 	Arguments:
@@ -113,7 +113,7 @@ def delete_bookmark(url):
 
 def get_html(url):
 	"""
-	Function reads html code out of given url, converts it into BeautifulSoup
+	Reads html code out of given url, converts it into BeautifulSoup
 	obejct and returns it.
 	
 	Arguments:
