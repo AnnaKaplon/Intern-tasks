@@ -1,6 +1,6 @@
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 import requests
-from urllib.parse import urljoin
 import re
 
 def site_map(url, siteMap={}, basicURL=''):
@@ -16,12 +16,16 @@ def site_map(url, siteMap={}, basicURL=''):
 	basicURL (optional) - url in reference to which function search subpages;
 		if not passed, url is basicURL
 	"""
+	if url[-1] == '/':
+		url = url[:-1]
 	url = delete_bookmark(url)
+	
+		
 	if basicURL == '':
 		basicURL = url
 		
-	title, refs = get_content(url,basicURL)
 	if url not in siteMap:
+		title, refs = get_content(url, basicURL)
 		siteMap[url] = {}
 		siteMap[url]['title'] = title
 		siteMap[url]['links'] = refs
@@ -106,7 +110,7 @@ def delete_bookmark(url):
 	Arguments:
 	url - url address
 	"""
-	match = re.search('#.+$', url)
+	match = re.search('#[^#]+$', url)
 	if match:
 		return url[:match.start()]
 	return url
@@ -121,3 +125,4 @@ def get_html(url):
 	"""
 	page = requests.get(url)
 	soup = BeautifulSoup(page.text, 'html.parser')
+	return soup
